@@ -20,21 +20,24 @@
     --pick:      #00C2C7;
     --pick-dim:  rgba(0,194,199,0.15);
     --pick-glow: rgba(0,194,199,0.35);
+    --atk:       #FF9A3C;
+    --atk-dim:   rgba(255,154,60,0.15);
+    --atk-glow:  rgba(255,154,60,0.35);
+    --def:       #7EC8E3;
+    --def-dim:   rgba(126,200,227,0.15);
+    --def-glow:  rgba(126,200,227,0.35);
     --text:      #E8E8F0;
     --muted:     #6A6A8A;
-    --active:    #FFD700;
-    --active-dim:rgba(255,215,0,0.15);
   }
 
   html, body {
-    height: 100%;
+    min-height: 100%;
     background: var(--bg);
     color: var(--text);
     font-family: 'Rajdhani', sans-serif;
     overflow-x: hidden;
   }
 
-  /* — Scanline overlay — */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -43,206 +46,148 @@
     z-index: 9999;
   }
 
-  /* === HEADER === */
+  /* ===== HEADER ===== */
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 40px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 36px;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(180deg, rgba(255,70,85,0.06) 0%, transparent 100%);
   }
 
   .logo {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: var(--text);
   }
   .logo span { color: var(--ban); }
 
-  /* === PRESET SELECTOR === */
-  .presets {
+  .header-controls {
     display: flex;
+    align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
   }
 
-  .preset-btn {
-    padding: 8px 22px;
+  /* ===== SHARED BUTTON BASE ===== */
+  .ctrl-btn {
+    padding: 7px 18px;
     background: transparent;
     border: 1px solid var(--border);
     color: var(--muted);
     font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 2px;
     cursor: pointer;
     transition: all 0.2s;
-    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    clip-path: polygon(7px 0%, 100% 0%, calc(100% - 7px) 100%, 0% 100%);
     text-transform: uppercase;
+    white-space: nowrap;
   }
-  .preset-btn:hover {
-    border-color: var(--ban);
-    color: var(--text);
-    background: var(--ban-dim);
-  }
-  .preset-btn.active {
+  .ctrl-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--text); }
+  .ctrl-btn.active {
     border-color: var(--ban);
     color: var(--ban);
     background: var(--ban-dim);
-    box-shadow: 0 0 12px var(--ban-glow);
+    box-shadow: 0 0 10px var(--ban-glow);
+  }
+  .ctrl-btn.lang-active {
+    border-color: var(--pick);
+    color: var(--pick);
+    background: var(--pick-dim);
+    box-shadow: 0 0 10px var(--pick-glow);
   }
 
-  /* === RESET === */
-  .reset-btn {
-    padding: 8px 18px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-  .reset-btn:hover {
-    border-color: var(--muted);
-    color: var(--text);
-  }
+  .divider { width: 1px; height: 24px; background: var(--border); }
 
-  /* === MAIN === */
+  /* ===== MAIN ===== */
   main {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 40px 40px 60px;
+    padding: 36px 36px 60px;
   }
 
-  /* === SEQUENCE BAR === */
-  .sequence-wrapper {
-    margin-bottom: 40px;
-  }
-
+  /* ===== SEQUENCE ===== */
   .sequence-label {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 3px;
     color: var(--muted);
     text-transform: uppercase;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .sequence {
     display: flex;
-    gap: 6px;
+    gap: 5px;
     flex-wrap: wrap;
+    margin-bottom: 28px;
   }
 
-  .seq-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-  }
+  .seq-step { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 
   .seq-dot {
-    width: 44px;
-    height: 44px;
+    width: 42px; height: 42px;
     border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
+    font-size: 9px; letter-spacing: 1px;
     text-transform: uppercase;
     color: var(--muted);
     transition: all 0.3s;
-    position: relative;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
   }
   .seq-dot.type-ban  { border-color: rgba(255,70,85,0.3);  color: rgba(255,70,85,0.5); }
   .seq-dot.type-pick { border-color: rgba(0,194,199,0.3);  color: rgba(0,194,199,0.5); }
-  .seq-dot.is-active.type-ban  {
-    border-color: var(--ban);
-    color: var(--ban);
-    background: var(--ban-dim);
-    box-shadow: 0 0 14px var(--ban-glow);
-    animation: pulse-ban 1.4s ease-in-out infinite;
-  }
-  .seq-dot.is-active.type-pick {
-    border-color: var(--pick);
-    color: var(--pick);
-    background: var(--pick-dim);
-    box-shadow: 0 0 14px var(--pick-glow);
-    animation: pulse-pick 1.4s ease-in-out infinite;
-  }
-  .seq-dot.done.type-ban  { border-color: var(--ban);  background: var(--ban-dim);  color: var(--ban); }
-  .seq-dot.done.type-pick { border-color: var(--pick); background: var(--pick-dim); color: var(--pick); }
+  .seq-dot.is-active.type-ban  { border-color:var(--ban); color:var(--ban); background:var(--ban-dim); box-shadow:0 0 14px var(--ban-glow); animation:pulse-ban 1.4s ease-in-out infinite; }
+  .seq-dot.is-active.type-pick { border-color:var(--pick);color:var(--pick);background:var(--pick-dim);box-shadow:0 0 14px var(--pick-glow);animation:pulse-pick 1.4s ease-in-out infinite; }
+  .seq-dot.done.type-ban  { border-color:var(--ban); background:var(--ban-dim); color:var(--ban); }
+  .seq-dot.done.type-pick { border-color:var(--pick);background:var(--pick-dim);color:var(--pick); }
 
   .seq-map-name {
-    font-size: 10px;
-    font-family: 'Share Tech Mono', monospace;
-    letter-spacing: 1px;
-    color: var(--muted);
-    text-transform: uppercase;
-    max-width: 44px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: 14px;
+    font-size: 9px; font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 1px; color: var(--muted);
+    text-transform: uppercase; max-width: 44px;
+    text-align: center; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap; height: 13px;
     transition: color 0.3s;
   }
   .seq-dot.done.type-ban  + .seq-map-name { color: var(--ban); }
   .seq-dot.done.type-pick + .seq-map-name { color: var(--pick); }
 
-  @keyframes pulse-ban  { 0%,100% { box-shadow: 0 0 10px var(--ban-glow); } 50% { box-shadow: 0 0 22px var(--ban-glow), 0 0 40px rgba(255,70,85,0.2); } }
-  @keyframes pulse-pick { 0%,100% { box-shadow: 0 0 10px var(--pick-glow); } 50% { box-shadow: 0 0 22px var(--pick-glow), 0 0 40px rgba(0,194,199,0.2); } }
+  @keyframes pulse-ban  { 0%,100%{box-shadow:0 0 10px var(--ban-glow);}50%{box-shadow:0 0 22px var(--ban-glow),0 0 40px rgba(255,70,85,0.2);} }
+  @keyframes pulse-pick { 0%,100%{box-shadow:0 0 10px var(--pick-glow);}50%{box-shadow:0 0 22px var(--pick-glow),0 0 40px rgba(0,194,199,0.2);} }
 
-  /* === STATUS BAR === */
+  /* ===== STATUS BAR ===== */
   .status-bar {
-    margin-bottom: 32px;
-    padding: 14px 20px;
+    margin-bottom: 28px;
+    padding: 13px 20px;
     border: 1px solid var(--border);
     background: var(--surface);
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    display: flex; align-items: center; gap: 14px;
     clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
   }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-ban  .status-dot { background:var(--ban);  box-shadow:0 0 8px var(--ban); }
+  .status-pick .status-dot { background:var(--pick); box-shadow:0 0 8px var(--pick); }
+  .status-side .status-dot { background:var(--atk);  box-shadow:0 0 8px var(--atk); }
+  .status-done .status-dot { background:var(--muted); }
+  .status-text { font-size:15px; font-weight:600; letter-spacing:2px; text-transform:uppercase; }
+  .status-ban  .status-text { color:var(--ban); }
+  .status-pick .status-text { color:var(--pick); }
+  .status-side .status-text { color:var(--atk); }
+  .status-done .status-text { color:var(--muted); }
+  .status-sub  { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; }
 
-  .status-indicator {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .status-ban  .status-indicator { background: var(--ban);  box-shadow: 0 0 8px var(--ban); }
-  .status-pick .status-indicator { background: var(--pick); box-shadow: 0 0 8px var(--pick); }
-  .status-done .status-indicator { background: var(--muted); }
-
-  .status-text {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-  .status-ban  .status-text { color: var(--ban); }
-  .status-pick .status-text { color: var(--pick); }
-  .status-done .status-text { color: var(--muted); }
-
-  .status-sub {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-  }
-
-  /* === MAP GRID === */
+  /* ===== MAP GRID ===== */
   .maps-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+    gap: 12px;
   }
 
   .map-card {
@@ -255,315 +200,422 @@
     transition: transform 0.2s, border-color 0.25s, box-shadow 0.25s;
     clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
   }
+  .map-card:not(.banned):not(.picked):hover { transform: translateY(-3px); }
+  .map-card.next-ban:not(.banned):not(.picked):hover { border-color:var(--ban); box-shadow:0 0 16px var(--ban-glow); }
+  .map-card.next-pick:not(.banned):not(.picked):hover { border-color:var(--pick); box-shadow:0 0 16px var(--pick-glow); }
 
-  .map-card:not(.banned):not(.picked):not(.used):hover {
-    transform: translateY(-3px);
-    border-color: rgba(255,255,255,0.25);
-  }
-  .map-card:not(.banned):not(.picked):not(.used).next-ban:hover {
-    border-color: var(--ban);
-    box-shadow: 0 0 16px var(--ban-glow), inset 0 0 20px rgba(255,70,85,0.05);
-  }
-  .map-card:not(.banned):not(.picked):not(.used).next-pick:hover {
-    border-color: var(--pick);
-    box-shadow: 0 0 16px var(--pick-glow), inset 0 0 20px rgba(0,194,199,0.05);
-  }
-
-  /* Map background gradient (unique per map) */
-  .map-card[data-map="Ascent"]  .map-bg { background: linear-gradient(135deg, #1a2a3a 0%, #0d1a2a 100%); }
-  .map-card[data-map="Breeze"]  .map-bg { background: linear-gradient(135deg, #1a2a1a 0%, #0d2a1a 100%); }
-  .map-card[data-map="Haven"]   .map-bg { background: linear-gradient(135deg, #2a1a2a 0%, #1a0d2a 100%); }
-  .map-card[data-map="Lotus"]   .map-bg { background: linear-gradient(135deg, #2a1a14 0%, #1a0d0d 100%); }
-  .map-card[data-map="Split"]   .map-bg { background: linear-gradient(135deg, #1a1a2a 0%, #0d0d1a 100%); }
-  .map-card[data-map="Summit"]  .map-bg { background: linear-gradient(135deg, #1a2a2a 0%, #0d1a1a 100%); }
-  .map-card[data-map="Sunset"]  .map-bg { background: linear-gradient(135deg, #2a1a10 0%, #1a0d08 100%); }
-
+  /* Actual map photos from Valorant media */
   .map-bg {
     position: absolute; inset: 0;
-    transition: opacity 0.3s;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.3s, filter 0.3s;
+    filter: brightness(0.55) saturate(0.8);
   }
+  .map-card:not(.banned):not(.picked):hover .map-bg { filter: brightness(0.75) saturate(1); }
+  .map-card.banned .map-bg  { filter: brightness(0.25) saturate(0) sepia(0.5); opacity: 0.7; }
+  .map-card.picked .map-bg  { filter: brightness(0.65) saturate(1.2); }
 
-  /* Map icon (big letter) */
-  .map-icon {
-    position: absolute;
-    bottom: -10px; right: -8px;
-    font-size: 72px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.04);
-    line-height: 1;
-    letter-spacing: -2px;
+  .map-card[data-map="Ascent"]  .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/3ca35e44f6bdb99f69a40a87a8e57b9a73b4e00c-1920x1080.jpg'); }
+  .map-card[data-map="Breeze"]  .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/04bb3b8a0fe9c02b97ce7c8f5bea05a71cd56c2b-1920x1080.jpg'); }
+  .map-card[data-map="Haven"]   .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/ecc9a6a08c27ceab434c4b8d18fc8b62d2117e9e-1920x1080.jpg'); }
+  .map-card[data-map="Lotus"]   .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/8d5fe29d0bb88a97e7da56c38c15f50a75048047-1920x1080.jpg'); }
+  .map-card[data-map="Split"]   .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/3e2e7e7d19476b28ec3ba4498c30eb6fa71ebad3-1920x1080.jpg'); }
+  .map-card[data-map="Summit"]  .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/2028d20bb56b9c7b0eed9b3f2eb4ff1ffae5b548-1920x1080.jpg'); }
+  .map-card[data-map="Sunset"]  .map-bg { background-image: url('https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/8f0c020cbc17b5a8c40843fcbf3df58a9f26fe80-1920x1080.jpg'); }
+
+  /* Fallback gradients if images don't load */
+  .map-card[data-map="Ascent"]  .map-bg { background-color: #1a2a3a; }
+  .map-card[data-map="Breeze"]  .map-bg { background-color: #1a2e1a; }
+  .map-card[data-map="Haven"]   .map-bg { background-color: #2a1a2e; }
+  .map-card[data-map="Lotus"]   .map-bg { background-color: #2e1a14; }
+  .map-card[data-map="Split"]   .map-bg { background-color: #1a1a2e; }
+  .map-card[data-map="Summit"]  .map-bg { background-color: #1a2a2a; }
+  .map-card[data-map="Sunset"]  .map-bg { background-color: #2e1a0e; }
+
+  /* Gradient overlay bottom */
+  .map-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+    z-index: 1;
     pointer-events: none;
-    transition: color 0.3s;
   }
 
   .map-name {
     position: absolute;
-    bottom: 10px; left: 12px;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    bottom: 9px; left: 11px;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
     z-index: 2;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.8);
     transition: color 0.3s;
   }
+  .map-card.banned .map-name { color: rgba(255,70,85,0.7); }
+  .map-card.picked .map-name { color: var(--pick); }
 
-  /* Crosshair corner decoration */
-  .map-card::before, .map-card::after {
-    content: '';
+  /* Corner crosshairs */
+  .map-corner-tl, .map-corner-br {
     position: absolute;
     width: 10px; height: 10px;
     z-index: 3;
-    transition: opacity 0.2s;
     opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
   }
-  .map-card::before {
-    top: 5px; left: 5px;
-    border-top: 1px solid currentColor;
-    border-left: 1px solid currentColor;
-  }
-  .map-card::after {
-    bottom: 5px; right: 5px;
-    border-bottom: 1px solid currentColor;
-    border-right: 1px solid currentColor;
-  }
-  .map-card.next-ban { color: var(--ban); }
-  .map-card.next-pick { color: var(--pick); }
-  .map-card.next-ban::before,
-  .map-card.next-ban::after,
-  .map-card.next-pick::before,
-  .map-card.next-pick::after { opacity: 1; }
+  .map-corner-tl { top: 5px; left: 5px; border-top: 1px solid currentColor; border-left: 1px solid currentColor; }
+  .map-corner-br { bottom: 5px; right: 5px; border-bottom: 1px solid currentColor; border-right: 1px solid currentColor; }
+  .map-card.next-ban .map-corner-tl,
+  .map-card.next-ban .map-corner-br { color: var(--ban); opacity: 1; }
+  .map-card.next-pick .map-corner-tl,
+  .map-card.next-pick .map-corner-br { color: var(--pick); opacity: 1; }
 
-  /* === BANNED === */
-  .map-card.banned {
-    cursor: default;
-    border-color: rgba(255,70,85,0.4);
-    box-shadow: 0 0 0 1px rgba(255,70,85,0.1) inset;
-  }
-  .map-card.banned .map-bg { opacity: 0.3; }
-  .map-card.banned .map-name { color: var(--ban); opacity: 0.7; }
-  .map-card.banned .ban-x {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-
-  /* === PICKED === */
-  .map-card.picked {
-    cursor: default;
-    border-color: var(--pick);
-    box-shadow: 0 0 18px var(--pick-glow);
-  }
-  .map-card.picked .map-name { color: var(--pick); }
-  .map-card.picked .pick-check { opacity: 1; transform: scale(1); }
-
-  /* Ban X overlay */
+  /* Ban X */
   .ban-x {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    opacity: 0;
-    transform: scale(0.7) rotate(-20deg);
-    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0; transform: scale(0.6) rotate(-20deg);
+    transition: all 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
     z-index: 4;
   }
-  .ban-x svg { width: 44px; height: 44px; }
+  .map-card.banned .ban-x { opacity: 1; transform: scale(1) rotate(0deg); }
+  .ban-x svg { width: 42px; height: 42px; }
 
-  /* Pick check overlay */
+  /* Pick check */
   .pick-check {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    opacity: 0;
-    transform: scale(0.7);
-    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0; transform: scale(0.6);
+    transition: all 0.35s cubic-bezier(0.175,0.885,0.32,1.275);
     z-index: 4;
   }
-  .pick-check svg { width: 40px; height: 40px; }
+  .map-card.picked .pick-check { opacity: 1; transform: scale(1); }
+  .pick-check svg { width: 38px; height: 38px; }
 
-  /* === RESULTS PANEL === */
+  /* ===== SIDE PICKER OVERLAY ===== */
+  .side-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .side-overlay.visible { display: flex; }
+
+  .side-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px 48px;
+    text-align: center;
+    max-width: 420px; width: 90%;
+    clip-path: polygon(16px 0%, 100% 0%, calc(100% - 16px) 100%, 0% 100%);
+    animation: modal-in 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes modal-in { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .side-modal-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .side-modal-map {
+    font-size: 28px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--pick); margin-bottom: 28px;
+  }
+  .side-modal-question {
+    font-size: 16px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text); margin-bottom: 20px;
+  }
+  .side-btns { display: flex; gap: 12px; justify-content: center; }
+
+  .side-btn {
+    flex: 1; padding: 14px 10px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .side-btn.atk { color: var(--atk); border-color: rgba(255,154,60,0.4); }
+  .side-btn.def { color: var(--def); border-color: rgba(126,200,227,0.4); }
+  .side-btn.atk:hover { background: var(--atk-dim); border-color: var(--atk); box-shadow: 0 0 14px var(--atk-glow); }
+  .side-btn.def:hover { background: var(--def-dim); border-color: var(--def); box-shadow: 0 0 14px var(--def-glow); }
+
+  /* ===== RESULTS PANEL ===== */
   .results-panel {
-    margin-top: 36px;
-    padding: 24px;
+    margin-top: 32px;
+    padding: 22px;
     border: 1px solid var(--border);
     background: var(--surface);
     display: none;
   }
   .results-panel.visible { display: block; }
-
   .results-title {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 16px;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 14px;
   }
-
-  .results-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
+  .results-row { display: flex; gap: 10px; flex-wrap: wrap; }
 
   .result-chip {
-    padding: 6px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    padding: 6px 14px;
+    font-size: 13px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
     border: 1px solid;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
   }
-  .result-chip.ban  { color: var(--ban);  border-color: rgba(255,70,85,0.4);  background: var(--ban-dim); }
-  .result-chip.pick { color: var(--pick); border-color: rgba(0,194,199,0.4);  background: var(--pick-dim); }
-
+  .result-chip.ban  { color:var(--ban);  border-color:rgba(255,70,85,0.4); background:var(--ban-dim); }
+  .result-chip.pick { color:var(--pick); border-color:rgba(0,194,199,0.4);  background:var(--pick-dim); }
   .result-label {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    opacity: 0.7;
-    display: block;
-    margin-top: 2px;
+    font-size: 9px; letter-spacing: 1px;
+    text-transform: uppercase; opacity: 0.7;
+    display: block; margin-top: 2px;
   }
 
-  /* Final map highlight */
+  /* Bo3 picks with side */
+  .pick-result-card {
+    padding: 10px 18px;
+    border: 1px solid rgba(0,194,199,0.4);
+    background: var(--pick-dim);
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .pick-result-card .pr-map {
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--pick);
+  }
+  .pick-result-card .pr-side {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 3px;
+  }
+  .pr-side.atk { color: var(--atk); }
+  .pr-side.def { color: var(--def); }
+
   .final-map-badge {
     display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
+    align-items: center; gap: 12px;
+    padding: 12px 22px;
     border: 1px solid var(--pick);
     background: var(--pick-dim);
     box-shadow: 0 0 20px var(--pick-glow);
-    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
-    margin-top: 16px;
+    clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+    margin-top: 14px;
   }
-  .final-map-badge .badge-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--pick);
-    text-transform: uppercase;
-  }
-  .final-map-badge .badge-name {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--pick);
-  }
+  .badge-label { font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--pick); text-transform:uppercase; }
+  .badge-name  { font-size:24px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--pick); }
+  .badge-side  { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px; text-transform:uppercase; }
+  .badge-side.atk { color: var(--atk); }
+  .badge-side.def { color: var(--def); }
 
-  /* Responsive */
-  @media (max-width: 600px) {
-    header { padding: 16px 20px; flex-wrap: wrap; gap: 12px; }
-    main { padding: 24px 16px 40px; }
-    .maps-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-  }
-
-  /* Flash animation on select */
-  @keyframes flash-ban {
-    0% { background: rgba(255,70,85,0.4); }
-    100% { background: transparent; }
-  }
-  @keyframes flash-pick {
-    0% { background: rgba(0,194,199,0.4); }
-    100% { background: transparent; }
-  }
+  @keyframes flash-ban  { 0%{background:rgba(255,70,85,0.4);}100%{background:transparent;} }
+  @keyframes flash-pick { 0%{background:rgba(0,194,199,0.4);}100%{background:transparent;} }
   .flash-ban  { animation: flash-ban  0.5s ease-out; }
   .flash-pick { animation: flash-pick 0.5s ease-out; }
+
+  @media (max-width: 600px) {
+    header { padding: 14px 18px; }
+    main { padding: 22px 16px 40px; }
+    .maps-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 9px; }
+    .side-modal { padding: 30px 24px; }
+  }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">VALO<span>RANT</span> — MAP DRAFT</div>
-  <div class="presets">
-    <button class="preset-btn active" onclick="setPreset('bo1')">BO1</button>
-    <button class="preset-btn" onclick="setPreset('bo3')">BO3</button>
+  <div class="header-controls">
+    <button class="ctrl-btn" id="lang-es" onclick="setLang('es')">ES</button>
+    <button class="ctrl-btn lang-active" id="lang-en" onclick="setLang('en')">EN</button>
+    <div class="divider"></div>
+    <button class="ctrl-btn active" id="btn-bo1" onclick="setPreset('bo1')">BO1</button>
+    <button class="ctrl-btn" id="btn-bo3" onclick="setPreset('bo3')">BO3</button>
+    <div class="divider"></div>
+    <button class="ctrl-btn" onclick="reset()" id="resetBtn">↺ RESET</button>
   </div>
-  <button class="reset-btn" onclick="reset()">↺ RESET</button>
 </header>
 
-<main>
-  <div class="sequence-wrapper">
-    <div class="sequence-label">// SECUENCIA DE DRAFT</div>
-    <div class="sequence" id="sequence"></div>
+<!-- Side picker modal -->
+<div class="side-overlay" id="sideOverlay">
+  <div class="side-modal">
+    <div class="side-modal-label" id="sideLabel">PICK 1</div>
+    <div class="side-modal-map" id="sideMapName">ASCENT</div>
+    <div class="side-modal-question" id="sideQuestion">Choose your side</div>
+    <div class="side-btns">
+      <button class="side-btn atk" id="atkBtn" onclick="chooseSide('atk')">⚔ ATTACK</button>
+      <button class="side-btn def" id="defBtn" onclick="chooseSide('def')">🛡 DEFENSE</button>
+    </div>
   </div>
+</div>
+
+<main>
+  <div class="sequence-label" id="seqLabel">// DRAFT SEQUENCE</div>
+  <div class="sequence" id="sequence"></div>
 
   <div class="status-bar" id="statusBar">
-    <div class="status-indicator"></div>
-    <div class="status-text" id="statusText">SELECCIONA UN MAPA</div>
+    <div class="status-dot"></div>
+    <div class="status-text" id="statusText">SELECT A MAP</div>
     <div class="status-sub" id="statusSub"></div>
   </div>
 
   <div class="maps-grid" id="mapsGrid"></div>
 
   <div class="results-panel" id="resultsPanel">
-    <div class="results-title">// RESULTADO DEL DRAFT</div>
+    <div class="results-title" id="resultsTitle">// DRAFT RESULTS</div>
     <div class="results-row" id="resultsRow"></div>
   </div>
 </main>
 
 <script>
+  /* ===== I18N ===== */
+  const T = {
+    en: {
+      seqLabel: '// DRAFT SEQUENCE',
+      resultsTitle: '// DRAFT RESULTS',
+      selectMap: 'SELECT A MAP',
+      banning: 'BANNING —',
+      picking: 'PICKING —',
+      draftDone: 'DRAFT COMPLETE',
+      draftDoneSub: 'All maps have been processed',
+      step: 'STEP',
+      of: '/',
+      selectSub: '· Select a map',
+      finalMap: 'FINAL MAP',
+      sideQuestion: 'Choose your starting side',
+      attack: '⚔ ATTACK',
+      defense: '🛡 DEFENSE',
+      bo3picks: ['PICK 1','PICK 2','FINAL MAP'],
+      pickLabel: 'PICK',
+      banLabel: 'BAN',
+      chooseSide: 'Choose a side',
+    },
+    es: {
+      seqLabel: '// SECUENCIA DE DRAFT',
+      resultsTitle: '// RESULTADO DEL DRAFT',
+      selectMap: 'SELECCIONA UN MAPA',
+      banning: 'BANEANDO —',
+      picking: 'ELIGIENDO —',
+      draftDone: 'DRAFT COMPLETADO',
+      draftDoneSub: 'Todos los mapas han sido procesados',
+      step: 'PASO',
+      of: '/',
+      selectSub: '· Selecciona un mapa',
+      finalMap: 'MAPA FINAL',
+      sideQuestion: 'Elige tu bando inicial',
+      attack: '⚔ ATAQUE',
+      defense: '🛡 DEFENSA',
+      bo3picks: ['PICK 1','PICK 2','MAPA 3'],
+      pickLabel: 'PICK',
+      banLabel: 'BAN',
+      chooseSide: 'Elige bando',
+    }
+  };
+
+  let lang = 'en';
+  let t = T[lang];
+
+  function setLang(l) {
+    lang = l;
+    t = T[lang];
+    document.getElementById('lang-es').classList.toggle('lang-active', l === 'es');
+    document.getElementById('lang-en').classList.toggle('lang-active', l === 'en');
+    document.getElementById('lang-es').classList.toggle('ctrl-btn', true);
+    applyLangTexts();
+    renderSequence();
+    renderMaps();
+    updateStatus();
+    if (currentStep >= sequence.length) showResults();
+  }
+
+  function applyLangTexts() {
+    document.getElementById('seqLabel').textContent = t.seqLabel;
+    document.getElementById('resultsTitle').textContent = t.resultsTitle;
+    document.getElementById('sideQuestion').textContent = t.sideQuestion;
+    document.getElementById('atkBtn').textContent = t.attack;
+    document.getElementById('defBtn').textContent = t.defense;
+  }
+
+  /* ===== DATA ===== */
   const MAPS = ['Ascent','Breeze','Haven','Lotus','Split','Summit','Sunset'];
 
   const PRESETS = {
-    bo1: [
-      {type:'ban',  label:'BAN 1'},
-      {type:'ban',  label:'BAN 2'},
-      {type:'ban',  label:'BAN 3'},
-      {type:'ban',  label:'BAN 4'},
-      {type:'ban',  label:'BAN 5'},
-      {type:'ban',  label:'BAN 6'},
-      {type:'pick', label:'MAPA'},
+    bo1: () => [
+      {type:'ban', labelKey:'BAN 1'},
+      {type:'ban', labelKey:'BAN 2'},
+      {type:'ban', labelKey:'BAN 3'},
+      {type:'ban', labelKey:'BAN 4'},
+      {type:'ban', labelKey:'BAN 5'},
+      {type:'ban', labelKey:'BAN 6'},
+      {type:'pick',labelKey:'MAP', pickIdx: 0},
     ],
-    bo3: [
-      {type:'ban',  label:'BAN 1'},
-      {type:'ban',  label:'BAN 2'},
-      {type:'pick', label:'PICK 1'},
-      {type:'pick', label:'PICK 2'},
-      {type:'ban',  label:'BAN 3'},
-      {type:'ban',  label:'BAN 4'},
-      {type:'pick', label:'MAPA 3'},
+    bo3: () => [
+      {type:'ban', labelKey:'BAN 1'},
+      {type:'ban', labelKey:'BAN 2'},
+      {type:'pick',labelKey:'PICK 1', pickIdx: 0, needsSide: true},
+      {type:'pick',labelKey:'PICK 2', pickIdx: 1, needsSide: true},
+      {type:'ban', labelKey:'BAN 3'},
+      {type:'ban', labelKey:'BAN 4'},
+      {type:'pick',labelKey:'MAP 3',  pickIdx: 2, needsSide: true},
     ],
   };
 
   let currentPreset = 'bo1';
   let sequence = [];
   let currentStep = 0;
-  let selections = []; // {map, type}
+  let selections = []; // {map, type, side?}
+  let pendingSide = null; // {map, stepIdx, pickIdx}
 
-  function setPreset(preset) {
-    currentPreset = preset;
-    document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().toLowerCase() === preset));
+  /* ===== PRESET / RESET ===== */
+  function setPreset(p) {
+    currentPreset = p;
+    document.getElementById('btn-bo1').classList.toggle('active', p === 'bo1');
+    document.getElementById('btn-bo3').classList.toggle('active', p === 'bo3');
     reset();
   }
 
   function reset() {
-    sequence = PRESETS[currentPreset].map(s => ({...s, map: null}));
+    sequence = PRESETS[currentPreset]().map(s => ({...s, map: null, side: null}));
     currentStep = 0;
     selections = [];
+    pendingSide = null;
+    document.getElementById('sideOverlay').classList.remove('visible');
+    document.getElementById('resultsPanel').classList.remove('visible');
+    document.getElementById('resultsRow').innerHTML = '';
+    // remove any extra badges
+    document.querySelectorAll('.final-map-badge').forEach(e => e.remove());
     renderSequence();
     renderMaps();
     updateStatus();
-    document.getElementById('resultsPanel').classList.remove('visible');
+    applyLangTexts();
   }
 
+  /* ===== RENDER SEQUENCE ===== */
   function renderSequence() {
     const container = document.getElementById('sequence');
     container.innerHTML = '';
     sequence.forEach((step, i) => {
       const wrap = document.createElement('div');
       wrap.className = 'seq-step';
-      wrap.id = `seq-step-${i}`;
 
       const dot = document.createElement('div');
       dot.className = `seq-dot type-${step.type}`;
       if (i === currentStep && currentStep < sequence.length) dot.classList.add('is-active');
       if (step.map) dot.classList.add('done');
-      dot.textContent = step.type === 'ban' ? 'BAN' : 'PCK';
+      dot.textContent = step.type === 'ban' ? t.banLabel : t.pickLabel;
 
       const name = document.createElement('div');
       name.className = 'seq-map-name';
-      name.textContent = step.map ? step.map.substring(0, 6) : '';
+      name.textContent = step.map ? step.map.substring(0,6) : '';
 
       wrap.appendChild(dot);
       wrap.appendChild(name);
@@ -571,11 +623,13 @@
     });
   }
 
+  /* ===== RENDER MAPS ===== */
   function renderMaps() {
     const grid = document.getElementById('mapsGrid');
     grid.innerHTML = '';
     const isDone = currentStep >= sequence.length;
-    const currentType = !isDone ? sequence[currentStep].type : null;
+    const awaitSide = pendingSide !== null;
+    const currentType = (!isDone && !awaitSide) ? sequence[currentStep].type : null;
 
     MAPS.forEach(map => {
       const sel = selections.find(s => s.map === map);
@@ -585,28 +639,24 @@
 
       if (sel) {
         card.classList.add(sel.type === 'ban' ? 'banned' : 'picked');
-      } else if (!isDone) {
+      } else if (!isDone && !awaitSide) {
         card.classList.add(`next-${currentType}`);
       }
 
       card.innerHTML = `
         <div class="map-bg"></div>
-        <div class="map-icon">${map[0]}</div>
+        <div class="map-corner-tl"></div>
+        <div class="map-corner-br"></div>
         <div class="map-name">${map}</div>
         <div class="ban-x">
-          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="8" y1="8" x2="36" y2="36" stroke="#FF4655" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="36" y1="8" x2="8" y2="36" stroke="#FF4655" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
+          <svg viewBox="0 0 44 44" fill="none"><line x1="8" y1="8" x2="36" y2="36" stroke="#FF4655" stroke-width="2.5" stroke-linecap="round"/><line x1="36" y1="8" x2="8" y2="36" stroke="#FF4655" stroke-width="2.5" stroke-linecap="round"/></svg>
         </div>
         <div class="pick-check">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polyline points="8,20 17,29 32,12" stroke="#00C2C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+          <svg viewBox="0 0 40 40" fill="none"><polyline points="8,20 17,29 32,12" stroke="#00C2C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       `;
 
-      if (!sel && !isDone) {
+      if (!sel && !isDone && !awaitSide) {
         card.addEventListener('click', () => selectMap(map, card));
       }
 
@@ -614,55 +664,93 @@
     });
   }
 
+  /* ===== SELECT MAP ===== */
   function selectMap(map, card) {
     if (currentStep >= sequence.length) return;
+    if (pendingSide !== null) return;
 
     const step = sequence[currentStep];
     step.map = map;
-    selections.push({map, type: step.type});
 
-    // Flash
     card.classList.add(step.type === 'ban' ? 'flash-ban' : 'flash-pick');
-    setTimeout(() => card.classList.remove('flash-ban', 'flash-pick'), 500);
+    setTimeout(() => card.classList.remove('flash-ban','flash-pick'), 500);
 
-    currentStep++;
-    renderSequence();
-    renderMaps();
-    updateStatus();
-
-    if (currentStep >= sequence.length) {
-      showResults();
+    if (step.type === 'pick' && step.needsSide && currentPreset === 'bo3') {
+      // Show side picker before advancing
+      pendingSide = { map, stepIdx: currentStep, pickIdx: step.pickIdx };
+      showSidePicker(map, step);
+    } else {
+      selections.push({map, type: step.type, side: null});
+      currentStep++;
+      renderSequence();
+      renderMaps();
+      updateStatus();
+      if (currentStep >= sequence.length) showResults();
     }
   }
 
+  /* ===== SIDE PICKER ===== */
+  function showSidePicker(map, step) {
+    const pickNum = step.pickIdx + 1;
+    document.getElementById('sideLabel').textContent = `${t.pickLabel} ${pickNum}`;
+    document.getElementById('sideMapName').textContent = map.toUpperCase();
+    document.getElementById('sideQuestion').textContent = t.sideQuestion;
+    document.getElementById('atkBtn').textContent = t.attack;
+    document.getElementById('defBtn').textContent = t.defense;
+    document.getElementById('sideOverlay').classList.add('visible');
+    renderMaps(); // re-render in waiting state
+    updateStatus();
+  }
+
+  function chooseSide(side) {
+    if (!pendingSide) return;
+    const { map, stepIdx } = pendingSide;
+    sequence[stepIdx].side = side;
+    selections.push({map, type: 'pick', side});
+    currentStep = stepIdx + 1;
+    pendingSide = null;
+    document.getElementById('sideOverlay').classList.remove('visible');
+    renderSequence();
+    renderMaps();
+    updateStatus();
+    if (currentStep >= sequence.length) showResults();
+  }
+
+  /* ===== STATUS BAR ===== */
   function updateStatus() {
     const bar = document.getElementById('statusBar');
     const text = document.getElementById('statusText');
     const sub = document.getElementById('statusSub');
-
     bar.className = 'status-bar';
 
-    if (currentStep >= sequence.length) {
-      bar.classList.add('status-done');
-      text.textContent = 'DRAFT COMPLETADO';
-      sub.textContent = 'Todos los mapas han sido procesados';
+    if (pendingSide) {
+      bar.classList.add('status-side');
+      text.textContent = t.chooseSide.toUpperCase() + ' — ' + pendingSide.map.toUpperCase();
+      sub.textContent = '';
       return;
     }
-
+    if (currentStep >= sequence.length) {
+      bar.classList.add('status-done');
+      text.textContent = t.draftDone;
+      sub.textContent = t.draftDoneSub;
+      return;
+    }
     const step = sequence[currentStep];
-    const stepNum = currentStep + 1;
     bar.classList.add(`status-${step.type}`);
     text.textContent = step.type === 'ban'
-      ? `BANEANDO — ${step.label}`
-      : `ELIGIENDO — ${step.label}`;
-    sub.textContent = `PASO ${stepNum} / ${sequence.length} · Selecciona un mapa`;
+      ? `${t.banning} ${step.labelKey}`
+      : `${t.picking} ${step.labelKey}`;
+    sub.textContent = `${t.step} ${currentStep + 1} ${t.of} ${sequence.length} ${t.selectSub}`;
   }
 
+  /* ===== RESULTS ===== */
   function showResults() {
     const panel = document.getElementById('resultsPanel');
     const row = document.getElementById('resultsRow');
     panel.classList.add('visible');
     row.innerHTML = '';
+    // remove old badges
+    panel.querySelectorAll('.final-map-badge').forEach(e => e.remove());
 
     const bans  = selections.filter(s => s.type === 'ban');
     const picks = selections.filter(s => s.type === 'pick');
@@ -670,30 +758,39 @@
     bans.forEach((s, i) => {
       const chip = document.createElement('div');
       chip.className = 'result-chip ban';
-      chip.innerHTML = `${s.map}<span class="result-label">BAN ${i+1}</span>`;
+      chip.innerHTML = `${s.map}<span class="result-label">${t.banLabel} ${i+1}</span>`;
       row.appendChild(chip);
     });
 
-    if (picks.length > 0) {
-      const finalMap = picks[picks.length - 1];
-      const badge = document.createElement('div');
-      badge.className = 'final-map-badge';
-      badge.style.display = 'flex';
-      badge.innerHTML = `<span class="badge-label">MAPA FINAL</span><span class="badge-name">${finalMap.map}</span>`;
-      panel.appendChild(badge);
-
-      // Intermediate picks (Bo3)
-      picks.slice(0, -1).forEach((s, i) => {
-        const chip = document.createElement('div');
-        chip.className = 'result-chip pick';
-        chip.innerHTML = `${s.map}<span class="result-label">PICK ${i+1}</span>`;
-        row.appendChild(chip);
+    if (currentPreset === 'bo3') {
+      // Show each pick with side
+      picks.forEach((s, i) => {
+        const isLast = i === picks.length - 1;
+        const card = document.createElement('div');
+        card.className = 'pick-result-card';
+        const sideText = s.side === 'atk' ? t.attack.replace('⚔ ','') : s.side === 'def' ? t.defense.replace('🛡 ','') : '';
+        const sideClass = s.side || '';
+        card.innerHTML = `
+          <div class="pr-map">${isLast ? '★ ' : ''}${s.map}</div>
+          ${s.side ? `<div class="pr-side ${sideClass}">${sideText}</div>` : ''}
+          <span class="result-label">${isLast ? t.finalMap : t.pickLabel + ' ' + (i+1)}</span>
+        `;
+        row.appendChild(card);
       });
+    } else {
+      // Bo1: just the final map badge
+      if (picks.length > 0) {
+        const badge = document.createElement('div');
+        badge.className = 'final-map-badge';
+        badge.innerHTML = `<span class="badge-label">${t.finalMap}</span><span class="badge-name">${picks[0].map}</span>`;
+        panel.appendChild(badge);
+      }
     }
   }
 
-  // Init
-  reset();
+  /* ===== INIT ===== */
+  setLang('en');
+  setPreset('bo1');
 </script>
 </body>
 </html>
