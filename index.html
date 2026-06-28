@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Valorant — Map Ban/Pick</title>
+<link rel="icon" type="image/png" href="https://www.valorant-esports.com/favicon.ico">
+<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230A0A0F'/><polygon points='50,10 90,85 70,85 50,45 30,85 10,85' fill='%23FF4655'/><polygon points='50,10 90,85 75,85 50,50' fill='%23FF4655' opacity='0.7'/></svg>">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap');
 
@@ -207,10 +209,14 @@
   /* Actual map photos from Valorant media */
   .map-bg {
     position: absolute; inset: 0;
-    background-size: cover;
-    background-position: center;
+    overflow: hidden;
     transition: opacity 0.3s, filter 0.3s;
     filter: brightness(0.55) saturate(0.8);
+  }
+  .map-bg img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    display: block;
   }
   .map-card:not(.banned):not(.picked):hover .map-bg { filter: brightness(0.75) saturate(1); }
   .map-card.banned .map-bg  { filter: brightness(0.25) saturate(0) sepia(0.5); opacity: 0.7; }
@@ -417,6 +423,122 @@
   .badge-side.atk { color: var(--atk); }
   .badge-side.def { color: var(--def); }
 
+  .flag-btn { display: flex; align-items: center; gap: 5px; }
+  .flag-icon { font-size: 14px; line-height: 1; }
+  .flag-code { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 2px; }
+
+  /* ===== TEAM SELECT OVERLAY ===== */
+  .team-overlay {
+    display: flex;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 2000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .team-overlay.hidden { display: none; }
+
+  .team-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px 52px;
+    text-align: center;
+    max-width: 480px; width: 90%;
+    clip-path: polygon(16px 0%, 100% 0%, calc(100% - 16px) 100%, 0% 100%);
+    animation: modal-in 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .team-modal-logo {
+    font-size: 13px; font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 4px; color: var(--ban);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .team-modal-title {
+    font-size: 22px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--text); margin-bottom: 8px;
+  }
+  .team-modal-sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 2px; margin-bottom: 32px;
+    line-height: 1.6;
+  }
+  .team-modal-sub span { color: var(--ban); }
+  .team-btns { display: flex; gap: 14px; justify-content: center; }
+  .team-btn {
+    flex: 1; padding: 16px 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 17px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    color: var(--text);
+  }
+  .team-btn:hover { border-color: var(--ban); color: var(--ban); background: var(--ban-dim); box-shadow: 0 0 16px var(--ban-glow); }
+  .team-btn.team-b { color: var(--pick); border-color: rgba(0,194,199,0.3); }
+  .team-btn.team-b:hover { border-color: var(--pick); background: var(--pick-dim); box-shadow: 0 0 16px var(--pick-glow); color: var(--pick); }
+  .team-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--muted); margin-top: 4px;
+    display: block;
+  }
+
+  .team-inputs { display: flex; gap: 16px; }
+  .team-input-group { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .team-input-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--muted); text-transform: uppercase;
+    text-align: left;
+  }
+  .team-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    width: 100%;
+  }
+  .team-input::placeholder { color: var(--muted); font-weight: 500; letter-spacing: 1px; }
+  .team-input:focus { border-color: var(--ban); box-shadow: 0 0 10px var(--ban-glow); }
+  .team-input.team-input-b:focus { border-color: var(--pick); box-shadow: 0 0 10px var(--pick-glow); }
+  .team-input-role {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase;
+    text-align: left;
+  }
+
+  /* ===== RESULT TEAM ATTRIBUTION ===== */
+  .pr-team {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; margin-top: 3px;
+    color: var(--muted);
+  }
+  .pr-team-pick { color: rgba(0,194,199,0.7); }
+  .pr-team-side { color: rgba(255,154,60,0.7); }
+  .result-chip .result-team {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; letter-spacing: 1px;
+    text-transform: uppercase; opacity: 0.6;
+    display: block; margin-top: 1px;
+  }
+
+  .map-card.seq-locked { opacity: 0.45; }
+  .map-card.seq-locked:hover { transform: none !important; }
+  .map-card.seq-locked .map-corner-tl,
+  .map-card.seq-locked .map-corner-br { opacity: 0 !important; }
+
   @keyframes flash-ban  { 0%{background:rgba(255,70,85,0.4);}100%{background:transparent;} }
   @keyframes flash-pick { 0%{background:rgba(0,194,199,0.4);}100%{background:transparent;} }
   .flash-ban  { animation: flash-ban  0.5s ease-out; }
@@ -435,15 +557,46 @@
 <header>
   <div class="logo">VALO<span>RANT</span> — MAP DRAFT</div>
   <div class="header-controls">
-    <button class="ctrl-btn" id="lang-es" onclick="setLang('es')">ES</button>
-    <button class="ctrl-btn lang-active" id="lang-en" onclick="setLang('en')">EN</button>
+    <button class="ctrl-btn flag-btn" id="lang-es" onclick="setLang('es')"><span class="flag-icon">🇪🇸</span><span class="flag-code">ES</span></button>
+    <button class="ctrl-btn flag-btn lang-active" id="lang-en" onclick="setLang('en')"><span class="flag-icon">🇬🇧</span><span class="flag-code">EN</span></button>
     <div class="divider"></div>
-    <button class="ctrl-btn active" id="btn-bo1" onclick="setPreset('bo1')">BO1</button>
-    <button class="ctrl-btn" id="btn-bo3" onclick="setPreset('bo3')">BO3</button>
+    <button class="ctrl-btn" id="btn-bo1" onclick="setPreset('bo1')">BO1</button>
+    <button class="ctrl-btn active" id="btn-bo3" onclick="setPreset('bo3')">BO3</button>
     <div class="divider"></div>
     <button class="ctrl-btn" onclick="reset()" id="resetBtn">↺ RESET</button>
   </div>
 </header>
+
+<!-- Team select modal -->
+<div class="team-overlay" id="teamOverlay">
+  <div class="team-modal">
+    <div class="team-modal-logo">// VALORANT MAP DRAFT</div>
+    <div class="team-modal-title" id="teamModalTitle">Introduce los equipos</div>
+    <div class="team-modal-sub" id="teamModalSub">
+      <span id="teamModalSubText">El Equipo B inicia el proceso de veto</span>
+    </div>
+    <div class="team-inputs">
+      <div class="team-input-group">
+        <label class="team-input-label" id="labelTeamA">EQUIPO A</label>
+        <input class="team-input" id="inputTeamA" type="text" maxlength="20" placeholder="Equipo A" autocomplete="off">
+        <div class="team-input-role" id="roleTeamA">BANEA SEGUNDO</div>
+      </div>
+      <div class="team-input-group">
+        <label class="team-input-label" id="labelTeamB">EQUIPO B</label>
+        <input class="team-input team-input-b" id="inputTeamB" type="text" maxlength="20" placeholder="Equipo B" autocomplete="off">
+        <div class="team-input-role" id="roleTeamB">INICIA EL VETO</div>
+      </div>
+    </div>
+    <div class="team-btns" style="margin-top:28px;">
+      <button class="team-btn" id="btnSelectA" onclick="selectTeam('A')">
+        <span id="btnSelectAText">SOY EQUIPO A</span>
+      </button>
+      <button class="team-btn team-b" id="btnSelectB" onclick="selectTeam('B')">
+        <span id="btnSelectBText">SOY EQUIPO B</span>
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Side picker modal -->
 <div class="side-overlay" id="sideOverlay">
@@ -531,6 +684,7 @@
     document.getElementById('lang-en').classList.toggle('lang-active', l === 'en');
     document.getElementById('lang-es').classList.toggle('ctrl-btn', true);
     applyLangTexts();
+    applyTeamSelectLang();
     renderSequence();
     renderMaps();
     updateStatus();
@@ -549,33 +703,92 @@
   const MAPS = ['Ascent','Breeze','Haven','Lotus','Split','Summit','Sunset'];
 
   const PRESETS = {
+    // Bo1: B B B A A A → last map auto
     bo1: () => [
-      {type:'ban', labelKey:'BAN 1'},
-      {type:'ban', labelKey:'BAN 2'},
-      {type:'ban', labelKey:'BAN 3'},
-      {type:'ban', labelKey:'BAN 4'},
-      {type:'ban', labelKey:'BAN 5'},
-      {type:'ban', labelKey:'BAN 6'},
-      {type:'pick',labelKey:'MAP', pickIdx: 0},
+      {type:'ban', labelKey:'BAN 1', team:'B'},
+      {type:'ban', labelKey:'BAN 2', team:'A'},
+      {type:'ban', labelKey:'BAN 3', team:'B'},
+      {type:'ban', labelKey:'BAN 4', team:'A'},
+      {type:'ban', labelKey:'BAN 5', team:'B'},
+      {type:'ban', labelKey:'BAN 6', team:'A'},
+      {type:'pick',labelKey:'MAP',   team:'auto', pickIdx: 0},
     ],
+    // Bo3: B ban, A ban, B pick, A pick, A ban, B ban, remaining auto
     bo3: () => [
-      {type:'ban', labelKey:'BAN 1'},
-      {type:'ban', labelKey:'BAN 2'},
-      {type:'pick',labelKey:'PICK 1', pickIdx: 0, needsSide: true},
-      {type:'pick',labelKey:'PICK 2', pickIdx: 1, needsSide: true},
-      {type:'ban', labelKey:'BAN 3'},
-      {type:'ban', labelKey:'BAN 4'},
-      {type:'pick',labelKey:'MAP 3',  pickIdx: 2, needsSide: true},
+      {type:'ban', labelKey:'BAN 1', team:'B'},
+      {type:'ban', labelKey:'BAN 2', team:'A'},
+      {type:'pick',labelKey:'PICK 1', pickIdx: 0, needsSide: true, team:'B'},
+      {type:'pick',labelKey:'PICK 2', pickIdx: 1, needsSide: true, team:'A'},
+      {type:'ban', labelKey:'BAN 3', team:'A'},
+      {type:'ban', labelKey:'BAN 4', team:'B'},
+      {type:'pick',labelKey:'MAP 3',  pickIdx: 2, needsSide: true, team:'auto'},
     ],
   };
 
-  let currentPreset = 'bo1';
+  let currentPreset = 'bo3';
   let sequence = [];
   let currentStep = 0;
-  let selections = []; // {map, type, side?}
+  let selections = []; // {map, type, side?, teamPick?, teamSide?}
   let pendingSide = null; // {map, stepIdx, pickIdx}
+  let myTeam = null; // 'A' or 'B'
+  let teamNames = { A: 'Equipo A', B: 'Equipo B' };
 
-  /* ===== PRESET / RESET ===== */
+  /* ===== TEAM SELECTION ===== */
+  function showTeamSelect() {
+    const overlay = document.getElementById('teamOverlay');
+    overlay.classList.remove('hidden');
+    applyTeamSelectLang();
+  }
+
+  function applyTeamSelectLang() {
+    const isEs = lang === 'es';
+    document.getElementById('teamModalTitle').textContent = isEs ? 'Introduce los equipos' : 'Enter Team Names';
+    document.getElementById('teamModalSubText').textContent = isEs
+      ? 'El Equipo B inicia el proceso de veto'
+      : 'Team B starts the veto process first';
+    document.getElementById('labelTeamA').textContent = isEs ? 'EQUIPO A' : 'TEAM A';
+    document.getElementById('labelTeamB').textContent = isEs ? 'EQUIPO B' : 'TEAM B';
+    document.getElementById('roleTeamA').textContent = isEs ? 'BANEA SEGUNDO' : 'PICKS SECOND';
+    document.getElementById('roleTeamB').textContent = isEs ? 'INICIA EL VETO' : 'STARTS VETO';
+    document.getElementById('btnSelectAText').textContent = isEs ? 'SOY EQUIPO A' : 'I AM TEAM A';
+    document.getElementById('btnSelectBText').textContent = isEs ? 'SOY EQUIPO B' : 'I AM TEAM B';
+    document.getElementById('inputTeamA').placeholder = isEs ? 'Equipo A' : 'Team A';
+    document.getElementById('inputTeamB').placeholder = isEs ? 'Equipo B' : 'Team B';
+  }
+
+  function selectTeam(team) {
+    const nameA = document.getElementById('inputTeamA').value.trim();
+    const nameB = document.getElementById('inputTeamB').value.trim();
+    teamNames.A = nameA || (lang === 'es' ? 'Equipo A' : 'Team A');
+    teamNames.B = nameB || (lang === 'es' ? 'Equipo B' : 'Team B');
+    myTeam = team;
+    document.getElementById('teamOverlay').classList.add('hidden');
+  }
+
+  /* ===== SEQUENTIAL BUTTON LOCK ===== */
+  // Returns true if the map can be acted on (left-to-right order enforced)
+  // Maps must be selected in sequence: map at index N can't be clicked if index N-1 hasn't been selected
+  // (This is handled naturally by currentStep — only maps in the "available" pool are clickable, 
+  //  and clicking advances currentStep. The header buttons BO1/BO3 are locked while a game is in progress.)
+
+  function lockHeaderButtons(locked) {
+    // Lock BO1/BO3 once veto starts to prevent mid-game changes
+    const bo1 = document.getElementById('btn-bo1');
+    const bo3 = document.getElementById('btn-bo3');
+    if (locked) {
+      bo1.style.pointerEvents = 'none';
+      bo1.style.opacity = '0.4';
+      bo3.style.pointerEvents = 'none';
+      bo3.style.opacity = '0.4';
+    } else {
+      bo1.style.pointerEvents = '';
+      bo1.style.opacity = '';
+      bo3.style.pointerEvents = '';
+      bo3.style.opacity = '';
+    }
+  }
+
+
   function setPreset(p) {
     currentPreset = p;
     document.getElementById('btn-bo1').classList.toggle('active', p === 'bo1');
@@ -593,10 +806,12 @@
     document.getElementById('resultsRow').innerHTML = '';
     // remove any extra badges
     document.querySelectorAll('.final-map-badge').forEach(e => e.remove());
+    lockHeaderButtons(false);
     renderSequence();
     renderMaps();
     updateStatus();
     applyLangTexts();
+    showTeamSelect();
   }
 
   /* ===== RENDER SEQUENCE ===== */
@@ -631,11 +846,22 @@
     const awaitSide = pendingSide !== null;
     const currentType = (!isDone && !awaitSide) ? sequence[currentStep].type : null;
 
-    MAPS.forEach(map => {
+      const MAP_IMGS = {
+        Ascent:  'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/3ca35e44f6bdb99f69a40a87a8e57b9a73b4e00c-1920x1080.jpg',
+        Breeze:  'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/04bb3b8a0fe9c02b97ce7c8f5bea05a71cd56c2b-1920x1080.jpg',
+        Haven:   'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/ecc9a6a08c27ceab434c4b8d18fc8b62d2117e9e-1920x1080.jpg',
+        Lotus:   'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/8d5fe29d0bb88a97e7da56c38c15f50a75048047-1920x1080.jpg',
+        Split:   'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/3e2e7e7d19476b28ec3ba4498c30eb6fa71ebad3-1920x1080.jpg',
+        Summit:  'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/2028d20bb56b9c7b0eed9b3f2eb4ff1ffae5b548-1920x1080.jpg',
+        Sunset:  'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/8f0c020cbc17b5a8c40843fcbf3df58a9f26fe80-1920x1080.jpg',
+      };
+
+    MAPS.forEach((map, mapIdx) => {
       const sel = selections.find(s => s.map === map);
       const card = document.createElement('div');
       card.className = 'map-card';
       card.dataset.map = map;
+      card.dataset.mapIdx = mapIdx;
 
       if (sel) {
         card.classList.add(sel.type === 'ban' ? 'banned' : 'picked');
@@ -644,7 +870,7 @@
       }
 
       card.innerHTML = `
-        <div class="map-bg"></div>
+        <div class="map-bg"><img src="${MAP_IMGS[map] || ''}" alt="${map}" loading="lazy" onerror="this.style.display='none'"></div>
         <div class="map-corner-tl"></div>
         <div class="map-corner-br"></div>
         <div class="map-name">${map}</div>
@@ -669,6 +895,9 @@
     if (currentStep >= sequence.length) return;
     if (pendingSide !== null) return;
 
+    // Lock preset buttons once veto starts
+    if (currentStep === 0) lockHeaderButtons(true);
+
     const step = sequence[currentStep];
     step.map = map;
 
@@ -677,10 +906,10 @@
 
     if (step.type === 'pick' && step.needsSide && currentPreset === 'bo3') {
       // Show side picker before advancing
-      pendingSide = { map, stepIdx: currentStep, pickIdx: step.pickIdx };
+      pendingSide = { map, stepIdx: currentStep, pickIdx: step.pickIdx, team: step.team };
       showSidePicker(map, step);
     } else {
-      selections.push({map, type: step.type, side: null});
+      selections.push({map, type: step.type, side: null, teamPick: step.team, teamSide: null});
       currentStep++;
       renderSequence();
       renderMaps();
@@ -694,9 +923,16 @@
     const pickNum = step.pickIdx + 1;
     document.getElementById('sideLabel').textContent = `${t.pickLabel} ${pickNum}`;
     document.getElementById('sideMapName').textContent = map.toUpperCase();
-    document.getElementById('sideQuestion').textContent = t.sideQuestion;
+    // The team that picks the side is the opponent
+    const sideTeam = step.team === 'A' ? 'B' : step.team === 'B' ? 'A' : null;
+    const sideTeamName = sideTeam ? getTeamName(sideTeam) : '';
+    document.getElementById('sideQuestion').textContent = sideTeamName
+      ? `${sideTeamName} — ${t.sideQuestion}`
+      : t.sideQuestion;
     document.getElementById('atkBtn').textContent = t.attack;
     document.getElementById('defBtn').textContent = t.defense;
+    // store sideTeam for later
+    if (pendingSide) pendingSide.sideTeam = sideTeam;
     document.getElementById('sideOverlay').classList.add('visible');
     renderMaps(); // re-render in waiting state
     updateStatus();
@@ -704,9 +940,9 @@
 
   function chooseSide(side) {
     if (!pendingSide) return;
-    const { map, stepIdx } = pendingSide;
+    const { map, stepIdx, team, sideTeam } = pendingSide;
     sequence[stepIdx].side = side;
-    selections.push({map, type: 'pick', side});
+    selections.push({map, type: 'pick', side, teamPick: team, teamSide: sideTeam || null});
     currentStep = stepIdx + 1;
     pendingSide = null;
     document.getElementById('sideOverlay').classList.remove('visible');
@@ -717,6 +953,11 @@
   }
 
   /* ===== STATUS BAR ===== */
+  function getTeamName(teamKey) {
+    if (teamKey === 'auto') return lang === 'es' ? 'AUTO' : 'AUTO';
+    return teamNames[teamKey] || (teamKey === 'A' ? (lang==='es'?'Equipo A':'Team A') : (lang==='es'?'Equipo B':'Team B'));
+  }
+
   function updateStatus() {
     const bar = document.getElementById('statusBar');
     const text = document.getElementById('statusText');
@@ -736,11 +977,12 @@
       return;
     }
     const step = sequence[currentStep];
+    const teamLabel = step.team !== 'auto' ? ` · ${getTeamName(step.team)}` : '';
     bar.classList.add(`status-${step.type}`);
     text.textContent = step.type === 'ban'
       ? `${t.banning} ${step.labelKey}`
       : `${t.picking} ${step.labelKey}`;
-    sub.textContent = `${t.step} ${currentStep + 1} ${t.of} ${sequence.length} ${t.selectSub}`;
+    sub.textContent = `${t.step} ${currentStep + 1} ${t.of} ${sequence.length} ${t.selectSub}${teamLabel}`;
   }
 
   /* ===== RESULTS ===== */
@@ -758,27 +1000,29 @@
     bans.forEach((s, i) => {
       const chip = document.createElement('div');
       chip.className = 'result-chip ban';
-      chip.innerHTML = `${s.map}<span class="result-label">${t.banLabel} ${i+1}</span>`;
+      const teamLabel = s.teamPick && s.teamPick !== 'auto' ? getTeamName(s.teamPick) : '';
+      chip.innerHTML = `${s.map}<span class="result-label">${t.banLabel} ${i+1}</span>${teamLabel ? `<span class="result-team">${teamLabel}</span>` : ''}`;
       row.appendChild(chip);
     });
 
     if (currentPreset === 'bo3') {
-      // Show each pick with side
       picks.forEach((s, i) => {
         const isLast = i === picks.length - 1;
         const card = document.createElement('div');
         card.className = 'pick-result-card';
         const sideText = s.side === 'atk' ? t.attack.replace('⚔ ','') : s.side === 'def' ? t.defense.replace('🛡 ','') : '';
         const sideClass = s.side || '';
+        const pickTeamLabel = s.teamPick && s.teamPick !== 'auto' ? getTeamName(s.teamPick) : (lang==='es'?'Auto':'Auto');
+        const sideTeamLabel = s.teamSide ? getTeamName(s.teamSide) : '';
         card.innerHTML = `
           <div class="pr-map">${isLast ? '★ ' : ''}${s.map}</div>
-          ${s.side ? `<div class="pr-side ${sideClass}">${sideText}</div>` : ''}
+          ${s.side ? `<div class="pr-side ${sideClass}">${sideText}${sideTeamLabel ? ` <span style="opacity:0.6;font-size:8px">· ${sideTeamLabel}</span>` : ''}</div>` : ''}
+          <div class="pr-team pr-team-pick">${lang==='es'?'Elige':'Pick'}: ${pickTeamLabel}</div>
           <span class="result-label">${isLast ? t.finalMap : t.pickLabel + ' ' + (i+1)}</span>
         `;
         row.appendChild(card);
       });
     } else {
-      // Bo1: just the final map badge
       if (picks.length > 0) {
         const badge = document.createElement('div');
         badge.className = 'final-map-badge';
@@ -789,8 +1033,9 @@
   }
 
   /* ===== INIT ===== */
-  setLang('en');
-  setPreset('bo1');
+  setLang('es');
+  setPreset('bo3');
+  showTeamSelect();
 </script>
 </body>
 </html>
